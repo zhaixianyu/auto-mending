@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "auto-mending",
+  "version": "${version}",
+  "name": "Auto Mending",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "homepage": "https://space.bilibili.com/31545812",
+    "sources": "https://github.com/plusls/oh-my-minecraft-client"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/xp.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+
+    ],
+    "main": [
+      "com.zxy.automending.AutoMending"
+    ]
+  },
+  "mixins": [
+    "auto-mending.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "*"
+  }
+}
