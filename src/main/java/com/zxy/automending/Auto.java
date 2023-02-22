@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
@@ -18,20 +17,20 @@ public class Auto {
     static Auto auto;
     MinecraftClient mc;
     ClientPlayerEntity player;
-    int temp = -1;
-    boolean runing = false;
+    int fushou = -1;
+    boolean run = false;
     ArrayList<Integer> zhuangbei;
     int tick = 0;
 
     public void autoMenDing(PlayerEntity player) {
         ScreenHandler sc = player.currentScreenHandler;
-        if (runing && !sc.slots.get(45).getStack().isDamaged()) reSwitch();
+        if (run && !sc.slots.get(45).getStack().isDamaged()) reSwitch();
         tick = 0;
         if (mc == null || !player.equals(mc.player)) return;
 
         for (int i = 0; i < sc.slots.size(); i++) {
             ItemStack item = sc.slots.get(i).getStack();
-            if (runing) {
+            if (run) {
                 xiejia(sc);
                 break;
             }
@@ -42,15 +41,16 @@ public class Auto {
                             item.equals(player.getMainHandStack()) ||
                             i == 45 || i == 5 || i == 6 || i == 7 || i == 8
             ) continue;
+//            System.out.println("修补："+i);
             autoSwitch(i, 45);
-            temp = i;
-            runing = true;
+            fushou = i;
+            run = true;
             break;
         }
     }
 
     public void tick() {
-        if (!runing) return;
+        if (!run) return;
         if (0 == ++tick % 10) reSwitch();
     }
 
@@ -69,29 +69,33 @@ public class Auto {
     }
 
     public void reSwitch() {
-        if (runing) {
-            if (temp != -1) autoSwitch(temp, 45);
+        if (run) {
+//            System.out.println("副手归位: " + temp);
+            if (fushou != -1) autoSwitch(fushou, 45);
             for (int i = 0; i < 4; i++) {
-                System.out.println(zhuangbei.get(i));
+
                 if (zhuangbei.get(i) != -1) {
+//                    System.out.println("装备归位:" + zhuangbei.get(i) +"  "+ (i+5));
                     autoSwitch(zhuangbei.get(i), i + 5);
                     zhuangbei.set(i, -1);
                 }
             }
             tick = 0;
-            temp = -1;
-            runing = false;
+            fushou = -1;
+            run = false;
         }
     }
 
     public void xiejia(ScreenHandler sc) {
+        assert MinecraftClient.getInstance().player != null;
+        if(MinecraftClient.getInstance().player.getHealth() < 20 || MinecraftClient.getInstance().player.isFallFlying()) return;
         for (int q = 5; q < 9; q++) {
             ItemStack item = sc.slots.get(q).getStack();
             if (item.isEmpty() || item.isDamaged() || EnchantmentHelper.getLevel(Enchantments.MENDING, item) <= 0)
                 continue;
             a:
             for (int air = q; air < sc.slots.size(); air++) {
-                if (air == 5 || air == 6 || air == 7 || air == 8 || air == 45) continue;
+                if (air == 5 || air == 6 || air == 7 || air == 8 || air == 45 || air == fushou) continue;
                 if (sc.slots.get(air).getStack().isOf(Items.AIR)) {
                     for (Integer zb : zhuangbei) {
                         if (zb == -1) {
@@ -102,7 +106,7 @@ public class Auto {
 //                            System.out.println("胸甲：" + zhuangbei.get(1));
 //                            System.out.println("裤子：" + zhuangbei.get(2));
 //                            System.out.println("鞋子：" + zhuangbei.get(3));
-//                            System.out.println("空位：" + air);
+//                            System.out.println("卸甲：" + air + "  " + q);
                             autoSwitch(q, air);
                             zhuangbei.set(q - 5, air);
                             break a;
