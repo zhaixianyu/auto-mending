@@ -87,8 +87,7 @@ public class Auto {
     }
 
     public void xiejia(ScreenHandler sc) {
-        assert MinecraftClient.getInstance().player != null;
-        if(MinecraftClient.getInstance().player.getHealth() < 20 || MinecraftClient.getInstance().player.isFallFlying()) return;
+        if(player.getHealth() < 20 || player.isFallFlying()) return;
         for (int q = 5; q < 9; q++) {
             ItemStack item = sc.slots.get(q).getStack();
             if (item.isEmpty() || item.isDamaged() || EnchantmentHelper.getLevel(Enchantments.MENDING, item) <= 0)
